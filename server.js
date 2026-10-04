@@ -26,6 +26,7 @@ const port = process.env.PORT || 3000;
 const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:8000',
+    "https://inventory-management-with-auth-and-role.onrender.com"
 ];
 
 
