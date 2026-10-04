@@ -2,6 +2,9 @@
 
 A Node.js and Express REST API for managing users, categories, suppliers, and products. MongoDB stores the records, and JWT authentication protects the inventory endpoints.
 
+**Live API:** [https://inventory-management-with-auth-and-role.onrender.com](https://inventory-management-with-auth-and-role.onrender.com)  
+**Live Swagger UI:** [https://inventory-management-with-auth-and-role.onrender.com/api-docs](https://inventory-management-with-auth-and-role.onrender.com/api-docs)
+
 ## Requirements
 
 - Node.js and npm
@@ -38,7 +41,7 @@ Or start it without nodemon:
 npm start
 ```
 
-The server connects to MongoDB before listening. API documentation is available at [http://localhost:3000/api-docs](http://localhost:3000/api-docs).
+The server connects to MongoDB before listening. Local API documentation is available at [http://localhost:3000/api-docs](http://localhost:3000/api-docs).
 
 ## Authentication
 

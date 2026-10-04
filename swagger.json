@@ -7,6 +7,9 @@
   },
   "servers": [
     {
+      "url": "https://inventory-management-with-auth-and-role.onrender.com"
+    },
+    {
       "url": "http://localhost:3000"
     }
   ],
