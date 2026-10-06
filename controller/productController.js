@@ -148,7 +148,7 @@ const updateProduct = async (req, res) => {
             return res.status(BAD_REQUEST).json({ message: error.details.map((err) => err.message) });
         }
 
-        const product = await productModel.findByIdAndUpdate({ id, value }, { new: true })
+        const product = await productModel.findByIdAndUpdate(id, value, { new: true })
 
         if (!product) {
             return res.status(NOT_FOUND).json({ message: 'Product not found' });
