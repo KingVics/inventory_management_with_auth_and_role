@@ -2,7 +2,7 @@ import { Product as productModel } from "../model/product.js"
 import { HttpCodes } from '../utils/statusCode.js'
 import { createProductValidation } from '../validator/validations.js';
 
-const { Ok, INTERNAL_SERVER_ERROR, BAD_REQUEST, NOT_FOUND, NO_CONTENT } = HttpCodes();
+const { Ok, INTERNAL_SERVER_ERROR, BAD_REQUEST, NOT_FOUND, NO_CONTENT, CREATED } = HttpCodes();
 
 
 
@@ -18,15 +18,6 @@ const createProduct = async (req, res) => {
         if (error) {
             return res.status(BAD_REQUEST).json({ message: error.details.map((err) => err.message) });
         }
-
-        const { name,
-            description,
-            sku,
-            price,
-            quantity,
-            minimumStock,
-            categoryId,
-            supplierId } = value
 
         const product = await productModel.create(value)
 
