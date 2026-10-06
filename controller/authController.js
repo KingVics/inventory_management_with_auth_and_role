@@ -4,7 +4,7 @@ import { HttpCodes } from '../utils/statusCode.js'
 import { userValidation, LoginSchema } from '../validator/validations.js';
 
 
-const { Ok, INTERNAL_SERVER_ERROR, CREATED, BAD_REQUEST, } = HttpCodes();
+const { Ok, INTERNAL_SERVER_ERROR, CREATED, BAD_REQUEST, UNAUTHORIZED } = HttpCodes();
 const authCookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -31,7 +31,7 @@ const loginUser = async (req, res) => {
 
         // If the user is not found, return an error response
         if (!user) {
-            return res.status(BAD_REQUEST).json({ message: 'Invalid email or password' });
+            return res.status(UNAUTHORIZED).json({ message: 'Invalid email or password' });
         }
 
         // Compare the provided password with the hashed password stored in the database
