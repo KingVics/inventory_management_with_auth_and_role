@@ -43,6 +43,16 @@ npm start
 
 The server connects to MongoDB before listening. Local API documentation is available at [http://localhost:3000/api-docs](http://localhost:3000/api-docs).
 
+## Tests
+
+Run the Jest test suite with:
+
+```sh
+npm test
+```
+
+Tests use Node's environment and mock database models, so controller unit tests do not require a running MongoDB instance.
+
 ## Authentication
 
 Register with `POST /api/v1/auth/register`, providing `firstName`, `lastName`, `email`, `phone`, `role`, and `password`. Passwords are hashed before storage. The accepted roles are `user`, `manager`, and `admin`; the current registration endpoint accepts the role in the request body, so production deployments should restrict who can assign privileged roles.
