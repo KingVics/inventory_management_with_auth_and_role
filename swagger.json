@@ -1023,7 +1023,7 @@
         }
       }
     },
-    "/api/transactions": {
+    "/api/v1/transactions": {
         "get": {
           "tags": [
             "Transactions"
@@ -1074,7 +1074,7 @@
           }
         }
       },
-      "/api/transactions/product/{productId}": {
+      "/api/v1/transactions/product/{productId}": {
         "get": {
           "tags": [
             "Transactions"
@@ -1102,7 +1102,7 @@
           }
         }
       },
-      "/api/transactions/{transactionId}": {
+      "/api/v1/transactions/{transactionId}": {
         "parameters": [
           {
             "name": "transactionId",

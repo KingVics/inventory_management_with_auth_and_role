@@ -74,7 +74,6 @@ app.use('/api/v1', isAuthentication, userRoutes);
 app.use('/api/v1/categories', isAuthentication, categoryRoutes);
 app.use('/api/v1/suppliers', isAuthentication, supplierRoutes);
 app.use('/api/v1/products', isAuthentication, productRoutes);
-app.use('/api/transactions', isAuthentication, transactionRoutes);
 app.use('/api/v1/transactions', isAuthentication, transactionRoutes);
 
 
