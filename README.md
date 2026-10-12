@@ -1,6 +1,6 @@
 # Inventory Management API
 
-A Node.js and Express REST API for managing users, categories, suppliers, and products. MongoDB stores the records, and JWT authentication protects the inventory endpoints.
+A Node.js and Express REST API for managing users, categories, suppliers, products, and inventory transactions. MongoDB stores the records, and JWT authentication protects the inventory endpoints.
 
 **Live API:** [https://inventory-management-with-auth-and-role.onrender.com](https://inventory-management-with-auth-and-role.onrender.com)  
 **Live Swagger UI:** [https://inventory-management-with-auth-and-role.onrender.com/api-docs](https://inventory-management-with-auth-and-role.onrender.com/api-docs)
@@ -68,8 +68,8 @@ All routes mounted under `/api/v1/users`, `/api/v1/categories`, `/api/v1/supplie
 | Role | Access |
 | --- | --- |
 | `user` | Read inventory and access user routes |
-| `manager` | User access plus create, update, and delete products |
-| `admin` | User access plus create, update, and delete categories, suppliers, and products |
+| `manager` | User access plus create, update, and delete products and transactions |
+| `admin` | User access plus create, update, and delete categories, suppliers, products, and transactions |
 
 User routes currently require authentication but do not restrict operations by role.
 
@@ -91,6 +91,11 @@ User routes currently require authentication but do not restrict operations by r
 | `GET`, `PUT`, `DELETE` | `/api/v1/products/{id}` | Read: authenticated; modify: admin or manager |
 | `GET` | `/api/v1/products/low-stock` | Authenticated |
 | `GET` | `/api/v1/products/supplier/{supplierId}` | Authenticated |
+| `GET`, `POST` | `/api/transactions` and `/api/v1/transactions` | Read: authenticated; create: manager or admin |
+| `GET`, `DELETE` | `/api/transactions/{transactionId}` and `/api/v1/transactions/{transactionId}` | Read: authenticated; delete: manager or admin |
+| `GET` | `/api/transactions/product/{productId}` and `/api/v1/transactions/product/{productId}` | Authenticated |
+
+Transaction creation accepts `productId`, `type` (`in` or `out`), a positive integer `quantity`, and optional `notes`. The authenticated user is recorded as `userId`; `previousQuantity` and `newQuantity` are calculated by the API. Stock-out transactions cannot reduce inventory below zero. Deleting a transaction reverses its stock change and is allowed only when it is the most recent transaction for that product and its recorded resulting stock still matches.
 
 ## Sample Data
 

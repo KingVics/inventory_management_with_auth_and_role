@@ -190,6 +190,72 @@
             "pattern": "^[a-fA-F0-9]{24}$"
           }
         }
+      },
+      "InventoryTransactionInput": {
+        "type": "object",
+        "required": [
+          "productId",
+          "type",
+          "quantity"
+        ],
+        "properties": {
+          "productId": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{24}$"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "in",
+              "out"
+            ]
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      },
+      "InventoryTransaction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/InventoryTransactionInput"
+          },
+          {
+            "type": "object",
+            "required": [
+              "_id",
+              "userId",
+              "previousQuantity",
+              "newQuantity",
+              "createdAt"
+            ],
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "userId": {
+                "type": "string",
+                "pattern": "^[a-fA-F0-9]{24}$"
+              },
+              "previousQuantity": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "newQuantity": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        ]
       }
     },
     "securitySchemes": {
@@ -220,6 +286,10 @@
     {
       "name": "Products",
       "description": "Product management"
+    },
+    {
+      "name": "Transactions",
+      "description": "Inventory stock transaction history"
     }
   ],
   "paths": {
@@ -950,6 +1020,137 @@
           "200": {
             "description": "Products in the category retrieved successfully"
           }
+        }
+      }
+    },
+    "/api/transactions": {
+        "get": {
+          "tags": [
+            "Transactions"
+          ],
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Transactions retrieved successfully"
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "Transactions"
+          ],
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryTransactionInput"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Transaction created and product stock updated"
+            },
+            "400": {
+              "description": "Invalid transaction input"
+            },
+            "404": {
+              "description": "Product not found"
+            },
+            "409": {
+              "description": "Insufficient stock"
+            }
+          }
+        }
+      },
+      "/api/transactions/product/{productId}": {
+        "get": {
+          "tags": [
+            "Transactions"
+          ],
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "productId",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "pattern": "^[a-fA-F0-9]{24}$"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Transactions for the product retrieved successfully"
+            }
+          }
+        }
+      },
+      "/api/transactions/{transactionId}": {
+        "parameters": [
+          {
+            "name": "transactionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
+          }
+        ],
+        "get": {
+          "tags": [
+            "Transactions"
+          ],
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Transaction retrieved successfully"
+            },
+            "404": {
+              "description": "Transaction not found"
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "Transactions"
+          ],
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Transaction deleted and stock movement reversed"
+            },
+            "404": {
+              "description": "Transaction not found"
+            },
+            "409": {
+              "description": "Transaction cannot be safely reversed"
+            }
         }
       }
     }

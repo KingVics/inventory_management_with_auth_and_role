@@ -17,6 +17,7 @@ import authRoutes from './route/auth.js';
 import categoryRoutes from './route/category.js';
 import supplierRoutes from "./route/supplier.js";
 import productRoutes from "./route/product.js"
+import transactionRoutes from './route/transaction.js';
 
 
 
@@ -73,6 +74,8 @@ app.use('/api/v1', isAuthentication, userRoutes);
 app.use('/api/v1/categories', isAuthentication, categoryRoutes);
 app.use('/api/v1/suppliers', isAuthentication, supplierRoutes);
 app.use('/api/v1/products', isAuthentication, productRoutes);
+app.use('/api/transactions', isAuthentication, transactionRoutes);
+app.use('/api/v1/transactions', isAuthentication, transactionRoutes);
 
 
 // ---------- 404 ----------

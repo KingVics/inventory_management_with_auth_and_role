@@ -64,3 +64,10 @@ export const createProductValidation = Joi.object({
     categoryId: Joi.string().hex().length(24).required(),
     supplierId: Joi.string().hex().length(24).required(),
 });
+
+export const createTransactionValidation = Joi.object({
+    productId: Joi.string().hex().length(24).required(),
+    type: Joi.string().valid('in', 'out').required(),
+    quantity: Joi.number().integer().min(1).required(),
+    notes: Joi.string().allow(''),
+});
