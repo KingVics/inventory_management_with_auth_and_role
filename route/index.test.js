@@ -6,6 +6,7 @@ describe('home page', () => {
         const html = renderHomePage();
 
         expect(html).toContain('Sign in with GitHub');
+        expect(html).toContain('href="/api/v1/auth/github"');
         expect(html).toContain('Open API documentation');
     });
 

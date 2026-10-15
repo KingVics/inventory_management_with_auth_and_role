@@ -23,9 +23,7 @@ export const renderHomePage = (username) => `<!doctype html>
         ? `<h1>Welcome, ${escapeHtml(username)}</h1>`
         : `<h1>Inventory Management API</h1>
     <p>Sign in with GitHub or open the API documentation.</p>
-    <form action="/api/v1/auth/github">
-      <button type="submit">Sign in with GitHub</button>
-    </form>`}
+    <a href="/api/v1/auth/github">Sign in with GitHub</a>`}
     <form action="/api-docs">
       <button type="submit">Open API documentation</button>
     </form>
