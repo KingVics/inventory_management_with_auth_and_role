@@ -44,6 +44,20 @@ const getAllProducts = async (req, res) => {
             categoryId,
             supplierId,
             productId } = req.query;
+
+        if (productId) {
+            const product = await productModel.findById(productId);
+
+            if (!product) {
+                return res.status(NOT_FOUND).json({ message: 'Product not found' });
+            }
+
+            return res.status(Ok).json({
+                success: true,
+                data: [product],
+            });
+        }
+
         let query = {}
 
         if (name) query.name = name
@@ -54,7 +68,6 @@ const getAllProducts = async (req, res) => {
         if (minimumStock) query.minimumStock = minimumStock
         if (categoryId) query.categoryId = categoryId
         if (supplierId) query.supplierId = supplierId
-        if (productId) query._id = productId
 
         const products = await productModel.find(query)
 
@@ -71,9 +84,9 @@ const getAllProducts = async (req, res) => {
 // -- get product by id
 const getProductById = async (req, res) => {
     try {
-        const { productId } = req.params;
+        const { id } = req.params;
 
-        const product = await productModel.findById({_id: productId})
+        const product = await productModel.findById(id)
 
         if (!product) {
             return res.status(NOT_FOUND).json({ message: 'Product not found' });

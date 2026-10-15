@@ -103,7 +103,6 @@ describe('product controller', () => {
                         minimumStock: '2',
                         categoryId: validProduct.categoryId,
                         supplierId: validProduct.supplierId,
-                        productId: 'product-id',
                     },
                 },
                 response,
@@ -117,12 +116,40 @@ describe('product controller', () => {
                 minimumStock: '2',
                 categoryId: validProduct.categoryId,
                 supplierId: validProduct.supplierId,
-                productId: 'product-id',
             });
             expect(response.status).toHaveBeenCalledWith(200);
             expect(response.json).toHaveBeenCalledWith({
                 success: true,
                 data: products,
+            });
+        });
+
+        test('returns the product matching productId', async () => {
+            const productId = '0123456789abcdef01234567';
+            const product = { _id: productId, ...validProduct };
+            productModel.findById.mockResolvedValue(product);
+
+            await getAllProducts({ query: { productId } }, response);
+
+            expect(productModel.findById).toHaveBeenCalledWith(productId);
+            expect(productModel.find).not.toHaveBeenCalled();
+            expect(response.status).toHaveBeenCalledWith(200);
+            expect(response.json).toHaveBeenCalledWith({
+                success: true,
+                data: [product],
+            });
+        });
+
+        test('returns not found when the requested productId does not exist', async () => {
+            const productId = '0123456789abcdef01234567';
+            productModel.findById.mockResolvedValue(null);
+
+            await getAllProducts({ query: { productId } }, response);
+
+            expect(productModel.findById).toHaveBeenCalledWith(productId);
+            expect(response.status).toHaveBeenCalledWith(404);
+            expect(response.json).toHaveBeenCalledWith({
+                message: 'Product not found',
             });
         });
     });
@@ -132,7 +159,7 @@ describe('product controller', () => {
             const product = { _id: 'product-id', ...validProduct };
             productModel.findById.mockResolvedValue(product);
 
-            await getProductById({ params: { productId: 'product-id' } }, response);
+            await getProductById({ params: { id: 'product-id' } }, response);
 
             expect(productModel.findById).toHaveBeenCalledWith('product-id');
             expect(response.status).toHaveBeenCalledWith(200);
@@ -145,7 +172,7 @@ describe('product controller', () => {
         test('returns not found when the product does not exist', async () => {
             productModel.findById.mockResolvedValue(null);
 
-            await getProductById({ params: { productId: 'missing-id' } }, response);
+            await getProductById({ params: { id: 'missing-id' } }, response);
 
             expect(response.status).toHaveBeenCalledWith(404);
             expect(response.json).toHaveBeenCalledWith({
