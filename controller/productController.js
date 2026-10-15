@@ -54,7 +54,7 @@ const getAllProducts = async (req, res) => {
         if (minimumStock) query.minimumStock = minimumStock
         if (categoryId) query.categoryId = categoryId
         if (supplierId) query.supplierId = supplierId
-        if (productId) query.productId = productId
+        if (productId) query._id = productId
 
         const products = await productModel.find(query)
 
@@ -73,7 +73,7 @@ const getProductById = async (req, res) => {
     try {
         const { productId } = req.params;
 
-        const product = await productModel.findById(productId)
+        const product = await productModel.findById({_id: productId})
 
         if (!product) {
             return res.status(NOT_FOUND).json({ message: 'Product not found' });
