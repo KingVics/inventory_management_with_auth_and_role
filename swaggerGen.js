@@ -1,5 +1,5 @@
 import swaggerAutogen from 'swagger-autogen';
-const autogenInstance = swaggerAutogen(); // Leave this empty
+const autogenInstance = swaggerAutogen({ openapi: '3.0.0' });
 
 const doc = {
     info: {
@@ -9,19 +9,17 @@ const doc = {
     },
     host: 'localhost:3000',
     schemes: ['http'],
-    // SWAGGER 2.0 AUTHENTICATION: Change "components.securitySchemes" to this:
     securityDefinitions: {
-        bearerAuth: {
+        sessionCookie: {
             type: 'apiKey',
-            in: 'header',
-            name: 'Authorization',
-            description: 'Enter your JWT token in this format: Bearer <your_token_here>'
+            in: 'cookie',
+            name: 'inventory.sid',
+            description: 'Passport session cookie set after GitHub sign-in'
         }
     },
-    // Keep this to apply it globally to all generated endpoints
     security: [
         {
-            bearerAuth: []
+            sessionCookie: []
         }
     ]
 };

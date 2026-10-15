@@ -1,6 +1,6 @@
 # Inventory Management API
 
-A Node.js and Express REST API for managing users, categories, suppliers, products, and inventory transactions. MongoDB stores the records, and JWT authentication protects the inventory endpoints.
+A Node.js and Express REST API for managing users, categories, suppliers, products, and inventory transactions. MongoDB stores the records and Passport-backed GitHub sessions protect the inventory endpoints.
 
 **Live API:** [https://inventory-management-with-auth-and-role.onrender.com](https://inventory-management-with-auth-and-role.onrender.com)  
 **Live Swagger UI:** [https://inventory-management-with-auth-and-role.onrender.com/api-docs](https://inventory-management-with-auth-and-role.onrender.com/api-docs)
@@ -22,12 +22,15 @@ Create a `.env` file in the project root:
 
 ```env
 MONGO_URI=mongodb://127.0.0.1:27017/inventory_management
-JWT_SECRET=replace-with-a-long-random-secret
+SESSION_SECRET=replace-with-a-long-random-secret
+GITHUB_CLIENT_ID=your-github-oauth-app-client-id
+GITHUB_CLIENT_SECRET=your-github-oauth-app-client-secret
+GITHUB_CALLBACK_URL=http://localhost:3000/api/v1/auth/github/callback
 PORT=3000
 NODE_ENV=development
 ```
 
-`MONGO_URI` and `JWT_SECRET` are required. `PORT` defaults to `3000`. Set `NODE_ENV=production` when deploying so the authentication cookie is marked `Secure`.
+`MONGO_URI`, `SESSION_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and `GITHUB_CALLBACK_URL` are required. Use a long random value for `SESSION_SECRET`. Create a GitHub OAuth App and set its authorization callback URL to the exact value of `GITHUB_CALLBACK_URL`. Set that value to your deployed API's callback URL in production. Passport sessions are stored in MongoDB's `sessions` collection, not in the `User` collection. `PORT` defaults to `3000`. Set `NODE_ENV=production` when deploying so authentication cookies are marked `Secure`.
 
 Start the development server:
 
@@ -55,11 +58,9 @@ Tests use Node's environment and mock database models, so controller unit tests 
 
 ## Authentication
 
-Register with `POST /api/v1/auth/register`, providing `firstName`, `lastName`, `email`, `phone`, `role`, and `password`. Passwords are hashed before storage. The accepted roles are `user`, `manager`, and `admin`; the current registration endpoint accepts the role in the request body, so production deployments should restrict who can assign privileged roles.
+Start GitHub sign-in by navigating directly to `http://localhost:3000/api/v1/auth/github` in a browser (or using the sign-in button on the home page). Do not use Swagger's **Try it out** for this route: it uses `fetch`, which cannot follow the redirect to GitHub. The callback validates OAuth state, stores the GitHub ID and username in a Passport session, and redirects to the home page. OAuth sign-in does not create or look up a user in the `User` collection. Any successfully signed-in GitHub account is authorized with the `user` role. From the home page, use **Open API documentation** to open `/api-docs`.
 
-Log in with `POST /api/v1/auth/login` and an `email` and `password`. A successful login returns a JWT and sets it in an HTTP-only `token` cookie with a 40-minute lifetime. Protected routes also accept the token as `Authorization: Bearer <token>`.
-
-Log out with `POST /api/v1/auth/logout`; this clears the authentication cookie. JWTs are stateless, so a copied token remains valid until it expires even after logout.
+Protected routes require an authenticated Passport session. Inventory transaction records store the GitHub account ID as their `userId`. Log out with `POST /api/v1/auth/logout`; this destroys the server-side session and clears its cookie.
 
 ## Roles
 
@@ -77,8 +78,8 @@ User routes currently require authentication but do not restrict operations by r
 
 | Method | Route | Access |
 | --- | --- | --- |
-| `POST` | `/api/v1/auth/register` | Public |
-| `POST` | `/api/v1/auth/login` | Public |
+| `GET` | `/api/v1/auth/github` | Public; starts GitHub sign-in |
+| `GET` | `/api/v1/auth/github/callback` | GitHub OAuth callback |
 | `POST` | `/api/v1/auth/logout` | Public; clears the cookie |
 | `GET` | `/api/v1/users` | Authenticated |
 | `GET` | `/api/v1/users/profile` | Authenticated |

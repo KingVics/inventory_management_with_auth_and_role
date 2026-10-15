@@ -1,19 +1,6 @@
 import Joi from "joi";
 
 // Validation for user registration
-export const userValidation = () => {
-    const schema = Joi.object({
-        firstName: Joi.string().required(),
-        lastName: Joi.string().required(),
-        email: Joi.string().trim().lowercase().email().required(),
-        phone: Joi.string().max(11),
-        role: Joi.string().valid('admin', 'user', 'manager').required(),
-        password: Joi.string().min(6).required(),
-    });
-    return schema;
-}
-
-// Validation for user registration
 export const userUpdateValidation = () => {
     const schema = Joi.object({
         firstName: Joi.string().required(),
@@ -24,17 +11,6 @@ export const userUpdateValidation = () => {
     });
     return schema;
 }
-
-export const LoginSchema = Joi.object({
-    email: Joi.string().trim().lowercase().required().messages({
-        'string.base': 'Email must be a string.',
-        'any.required': 'Email number is required.',
-    }),
-    password: Joi.string().required().messages({
-        'string.base': 'password must be a string.',
-    }),
-
-});
 
 // -- category validation
 export const categoryValidation = Joi.object({

@@ -15,95 +15,6 @@
   ],
   "components": {
     "schemas": {
-      "UserRegistration": {
-        "type": "object",
-        "required": [
-          "firstName",
-          "lastName",
-          "email",
-          "phone",
-          "role",
-          "password"
-        ],
-        "properties": {
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string",
-            "format": "email"
-          },
-          "phone": {
-            "type": "string",
-            "maxLength": 11
-          },
-          "role": {
-            "type": "string",
-            "enum": [
-              "admin",
-              "user",
-              "manager"
-            ]
-          },
-          "password": {
-            "type": "string",
-            "minLength": 6
-          }
-        }
-      },
-      "UserLogin": {
-        "type": "object",
-        "required": [
-          "email",
-          "password"
-        ],
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email"
-          },
-          "password": {
-            "type": "string"
-          }
-        }
-      },
-      "UserUpdate": {
-        "type": "object",
-        "required": [
-          "firstName",
-          "lastName",
-          "email",
-          "phone",
-          "role"
-        ],
-        "properties": {
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string",
-            "format": "email"
-          },
-          "phone": {
-            "type": "string",
-            "maxLength": 11
-          },
-          "role": {
-            "type": "string",
-            "enum": [
-              "admin",
-              "user",
-              "manager"
-            ]
-          }
-        }
-      },
       "Category": {
         "type": "object",
         "required": [
@@ -239,7 +150,7 @@
               },
               "userId": {
                 "type": "string",
-                "pattern": "^[a-fA-F0-9]{24}$"
+                "description": "GitHub account ID of the authenticated user"
               },
               "previousQuantity": {
                 "type": "integer",
@@ -259,21 +170,17 @@
       }
     },
     "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
+      "sessionCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "inventory.sid"
       }
     }
   },
   "tags": [
     {
       "name": "Authentication",
-      "description": "User registration and login"
-    },
-    {
-      "name": "Users",
-      "description": "User management"
+      "description": "GitHub OAuth authentication"
     },
     {
       "name": "Categories",
@@ -293,48 +200,34 @@
     }
   ],
   "paths": {
-    "/api/v1/auth/register": {
-      "post": {
-        "description": "",
+    "/api/v1/auth/github": {
+      "get": {
+        "summary": "Start GitHub sign-in",
+        "description": "OAuth sign-in redirects the browser to GitHub and cannot be completed with Swagger's Try it out (which uses fetch). Open [GitHub sign-in in this browser](../api/v1/auth/github) instead.",
         "tags": [
           "Authentication"
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UserRegistration"
-              }
-            }
-          }
-        },
         "responses": {
-          "default": {
-            "description": ""
+          "302": {
+            "description": "Redirects to GitHub authorization"
+          },
+          "400": {
+            "description": "OAuth must be started by browser navigation, not by a fetch request"
           }
         }
       }
     },
-    "/api/v1/auth/login": {
-      "post": {
-        "description": "",
+    "/api/v1/auth/github/callback": {
+      "get": {
         "tags": [
           "Authentication"
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UserLogin"
-              }
-            }
-          }
-        },
         "responses": {
-          "default": {
-            "description": ""
+          "302": {
+            "description": "Sets the authentication cookie and redirects to the home page"
+          },
+          "401": {
+            "description": "GitHub authentication failed"
           }
         }
       }
@@ -351,160 +244,6 @@
         }
       }
     },
-    "/api/v1/users/{id}": {
-      "get": {
-        "description": "",
-        "tags": [
-          "Users"
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      },
-      "delete": {
-        "description": "",
-        "tags": [
-          "Users"
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/v1/users": {
-      "get": {
-        "description": "",
-        "tags": [
-          "Users"
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "firstName",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "lastName",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "userId",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "email",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "phone",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/api/v1/users/profile": {
-      "get": {
-        "description": "",
-        "tags": [
-          "Users"
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      },
-      "put": {
-        "description": "",
-        "tags": [
-          "Users"
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UserUpdate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/api/v1/categories": {
       "get": {
         "tags": [
@@ -512,7 +251,7 @@
         ],
         "security": [
           {
-            "bearerAuth": []
+            "sessionCookie": []
           }
         ],
         "parameters": [
@@ -543,7 +282,7 @@
         ],
         "security": [
           {
-            "bearerAuth": []
+            "sessionCookie": []
           }
         ],
         "requestBody": {
@@ -580,7 +319,7 @@
         ],
         "security": [
           {
-            "bearerAuth": []
+            "sessionCookie": []
           }
         ],
         "responses": {
@@ -595,7 +334,7 @@
         ],
         "security": [
           {
-            "bearerAuth": []
+            "sessionCookie": []
           }
         ],
         "requestBody": {
@@ -620,7 +359,7 @@
         ],
         "security": [
           {
-            "bearerAuth": []
+            "sessionCookie": []
           }
         ],
         "responses": {
@@ -637,7 +376,7 @@
         ],
         "security": [
           {
-            "bearerAuth": []
+            "sessionCookie": []
           }
         ],
         "parameters": [
@@ -689,7 +428,7 @@
         ],
         "security": [
           {
-            "bearerAuth": []
+            "sessionCookie": []
           }
         ],
         "requestBody": {
@@ -726,7 +465,7 @@
         ],
         "security": [
           {
-            "bearerAuth": []
+            "sessionCookie": []
           }
         ],
         "responses": {
@@ -741,7 +480,7 @@
         ],
         "security": [
           {
-            "bearerAuth": []
+            "sessionCookie": []
           }
         ],
         "requestBody": {
@@ -766,7 +505,7 @@
         ],
         "security": [
           {
-            "bearerAuth": []
+            "sessionCookie": []
           }
         ],
         "responses": {
@@ -783,7 +522,7 @@
         ],
         "security": [
           {
-            "bearerAuth": []
+            "sessionCookie": []
           }
         ],
         "parameters": [
@@ -863,7 +602,7 @@
         ],
         "security": [
           {
-            "bearerAuth": []
+            "sessionCookie": []
           }
         ],
         "requestBody": {
@@ -890,7 +629,7 @@
         ],
         "security": [
           {
-            "bearerAuth": []
+            "sessionCookie": []
           }
         ],
         "responses": {
@@ -907,7 +646,7 @@
         ],
         "security": [
           {
-            "bearerAuth": []
+            "sessionCookie": []
           }
         ],
         "parameters": [
@@ -945,7 +684,7 @@
         ],
         "security": [
           {
-            "bearerAuth": []
+            "sessionCookie": []
           }
         ],
         "responses": {
@@ -960,7 +699,7 @@
         ],
         "security": [
           {
-            "bearerAuth": []
+            "sessionCookie": []
           }
         ],
         "requestBody": {
@@ -985,7 +724,7 @@
         ],
         "security": [
           {
-            "bearerAuth": []
+            "sessionCookie": []
           }
         ],
         "responses": {
@@ -1002,7 +741,7 @@
         ],
         "security": [
           {
-            "bearerAuth": []
+            "sessionCookie": []
           }
         ],
         "parameters": [
@@ -1030,7 +769,7 @@
           ],
           "security": [
             {
-              "bearerAuth": []
+              "sessionCookie": []
             }
           ],
           "responses": {
@@ -1045,7 +784,7 @@
           ],
           "security": [
             {
-              "bearerAuth": []
+              "sessionCookie": []
             }
           ],
           "requestBody": {
@@ -1081,7 +820,7 @@
           ],
           "security": [
             {
-              "bearerAuth": []
+              "sessionCookie": []
             }
           ],
           "parameters": [
@@ -1120,7 +859,7 @@
           ],
           "security": [
             {
-              "bearerAuth": []
+              "sessionCookie": []
             }
           ],
           "responses": {
@@ -1138,7 +877,7 @@
           ],
           "security": [
             {
-              "bearerAuth": []
+              "sessionCookie": []
             }
           ],
           "responses": {
